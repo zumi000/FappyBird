@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -14,18 +15,20 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-
 public class SettingsScreen implements Screen {
 
     private Stage stage;
     private Game game;
     Skin gameSkin;
 
+    LocalDataHandler localDataHandler;
+    String userDataString = "No user was saved yet";
+
     public SettingsScreen(Game aGame) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
         gameSkin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
-
+        localDataHandler = new LocalDataHandler();
 
         Label title = new Label("Settings", gameSkin);
         title.setAlignment(Align.center);
@@ -33,6 +36,14 @@ public class SettingsScreen implements Screen {
         title.setFontScale(8,8);
         title.setWidth(Gdx.graphics.getWidth());
         stage.addActor(title);
+
+
+        Label score = new Label(localDataHandler.getUserData().toString(), gameSkin);
+        score.setAlignment(Align.center);
+        score.setY((float)((Gdx.graphics.getHeight() - score.getHeight()) * 0.8) - title.getHeight() *2);
+        score.setFontScale(2);
+        score.setWidth(Gdx.graphics.getWidth());
+        stage.addActor(score);
 
         TextButton saveButton = new TextButton("Save", gameSkin);
         saveButton.setWidth(Gdx.graphics.getWidth()/3);
@@ -44,7 +55,7 @@ public class SettingsScreen implements Screen {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log("touchup", "Save");
-
+                stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

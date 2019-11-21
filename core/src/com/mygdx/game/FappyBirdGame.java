@@ -4,11 +4,10 @@ import com.badlogic.gdx.Game;
 
 public class FappyBirdGame extends Game {
 
-
     @Override
     public void create () {
+        new LocalDataHandler().getUserData();
         this.setScreen(new HomeScreen(this));
-
     }
 
     @Override

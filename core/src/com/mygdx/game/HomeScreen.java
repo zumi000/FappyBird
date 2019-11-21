@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -21,18 +23,21 @@ public class HomeScreen implements Screen {
     private Game game;
     Skin gameSkin;
     SpriteBatch batch;
+    LocalDataHandler localDataHandler;
 
     public HomeScreen(Game aGame) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
         gameSkin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
         batch = new SpriteBatch();
+        //localDataHandler = new LocalDataHandler("NEW_USER_AT_EVERY_START_OF_THE_HOME_SCREEN"); //TODO: name input debugger
+        localDataHandler = new LocalDataHandler();
 
         Label title = new Label("Main menu", gameSkin);
         title.setAlignment(Align.center);
         float titleY = (float)((Gdx.graphics.getHeight() - title.getHeight()) * 0.8);
         title.setY(titleY);
-        title.setFontScale(8,8);
+        title.setFontScale(8);
         title.setWidth(Gdx.graphics.getWidth());
         stage.addActor(title);
 
@@ -44,12 +49,12 @@ public class HomeScreen implements Screen {
         scoresButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("touchup", "Play");
+                Gdx.app.log("touchup", "High scores");
             }
 
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("touchdown", "Play");
+                Gdx.app.log("touchdown", "High scores");
                 return true;
             }
         });
@@ -63,21 +68,83 @@ public class HomeScreen implements Screen {
         settingsButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("touchup", "Options");
-                Gdx.app.log("Gdx.graphics.getDensity()", String.valueOf(Gdx.graphics.getDensity()));
+                Gdx.app.log("touchup", "Settings");
                 game.setScreen(new SettingsScreen(game));
 
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("touchdown", "Options");
+                Gdx.app.log("touchdown", "Settings");
                 return true;
 
             }
         });
         stage.addActor(settingsButton);
 
-        TextButton playButton = new TextButton("Play!", gameSkin);
+        final Label welcomeBack = new Label("Welcome " + localDataHandler.getUserData().userName + "!", gameSkin);
+        final Label welcomeNew = new Label("Please enter your name!", gameSkin);
+        final TextField usernameTextField = new TextField("", gameSkin);
+        final TextButton playButton = new TextButton("Play!", gameSkin);
+        final TextButton saveNameButton = new TextButton("Save", gameSkin);
+        welcomeNew.setVisible(false);
+        usernameTextField.setVisible(false);
+        saveNameButton.setVisible(false);
+
+        if (localDataHandler.getUserData().userName.equals(localDataHandler.DEFAULT_USERNAME)) {
+            welcomeBack.setVisible(false);
+            playButton.setVisible(false);
+            welcomeNew.setVisible(true);
+            usernameTextField.setVisible(true);
+            saveNameButton.setVisible(true);
+        }
+
+        welcomeNew.setAlignment(Align.center);
+        welcomeNew.getStyle().font.getData().setScale(5f);
+        welcomeNew.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
+        welcomeNew.setPosition((Gdx.graphics.getWidth()-welcomeNew.getWidth())/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3 / 2);
+        stage.addActor(welcomeNew);
+
+        welcomeBack.setAlignment(Align.center);
+        welcomeBack.getStyle().font.getData().setScale(5f);
+        welcomeBack.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
+        welcomeBack.setPosition((Gdx.graphics.getWidth()-welcomeBack.getWidth())/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3 / 2);
+        stage.addActor(welcomeBack);
+
+        usernameTextField.setAlignment(Align.center);
+        usernameTextField.getStyle().font.getData().setScale(3.5f);
+        usernameTextField.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
+        usernameTextField.setPosition(Gdx.graphics.getWidth()/2-usernameTextField.getWidth()/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3);
+        stage.addActor(usernameTextField);
+
+        saveNameButton.setWidth(Gdx.graphics.getWidth()/2);
+        saveNameButton.setHeight(saveNameButton.getWidth()/2);
+        saveNameButton.getLabel().setFontScale(4);
+        saveNameButton.setPosition(Gdx.graphics.getWidth()/2-saveNameButton.getWidth()/2,scoresButton.getHeight());
+        saveNameButton.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("|" + usernameTextField.getText().trim() + "|");
+                if (usernameTextField.getText().equals("") ||
+                        usernameTextField.getText().trim().equals(" ") ||
+                        usernameTextField.getText().trim().isEmpty()
+                 ) {
+                } else {
+                    localDataHandler.writeUser(new UserData(usernameTextField.getText().trim(), Gdx.app.getVersion()));
+                    welcomeNew.setVisible(false);
+                    usernameTextField.setVisible(false);
+                    saveNameButton.setVisible(false);
+                    welcomeBack.setText("Welcome " + localDataHandler.getUserData().userName + "!");
+                    welcomeBack.setVisible(true);
+                    playButton.setVisible(true);
+                }
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        stage.addActor(saveNameButton);
+
         playButton.setWidth(Gdx.graphics.getWidth()/2);
         playButton.setHeight(playButton.getWidth()/2);
         playButton.getLabel().setFontScale(4);
@@ -85,9 +152,7 @@ public class HomeScreen implements Screen {
         playButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("touchup", "Play");
                 game.setScreen(new GameScreen(game));
-
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
