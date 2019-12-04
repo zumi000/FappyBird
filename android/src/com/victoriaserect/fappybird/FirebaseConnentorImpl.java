@@ -10,29 +10,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-
 
 import static android.content.ContentValues.TAG;
 
-public class FirebaseConnentorImpl extends FirebaseMessagingService implements FirebaseConnector {
-
+public class FirebaseConnentorImpl implements FirebaseConnector {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
     FirebaseUser anonymFirebaseUser;
 
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        System.out.println("remoteMessage: " + remoteMessage.toString());
-        //This will give you the topic string from curl request (/topics/news)
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
-        //This will give you the Text property in the curl request(Sample Message):
-        Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
-        //This is where you get your click_action
-        Log.d(TAG, "Notification Click Action: " + remoteMessage.getNotification().getClickAction());
-        //put code here to navigate based on click_action
+    private AndroidLauncher.ContextCommandsImpl contextCommands;
+
+    public FirebaseConnentorImpl(AndroidLauncher.ContextCommandsImpl contextCommands) {
+        this.contextCommands = contextCommands;
     }
 
     public void anonymConnect() {

@@ -18,8 +18,8 @@ public class FappyBirdGame extends Game {
     @Override
     public void render () {
         super.render();
-
     }
+
     @Override
     public void dispose () {
         super.dispose();

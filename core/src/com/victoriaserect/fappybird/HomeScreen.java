@@ -42,12 +42,12 @@ public class HomeScreen implements Screen {
         title.setWidth(Gdx.graphics.getWidth());
         stage.addActor(title);
 
-        TextButton scoresButton = new TextButton("Settings", rainbowFontSkin, "small");
-        scoresButton.setWidth(Gdx.graphics.getWidth()/3);
-        scoresButton.setHeight(scoresButton.getWidth()/3);
-        scoresButton.getLabel().setFontScale(3);
-        scoresButton.setPosition(Gdx.graphics.getWidth()/2-scoresButton.getWidth()/2, Gdx.graphics.getHeight()/2 + scoresButton.getHeight()*2);
-        scoresButton.addListener(new InputListener(){
+        TextButton settingsButton = new TextButton("Settings", rainbowFontSkin, "small");
+        settingsButton.setWidth(Gdx.graphics.getWidth()/3);
+        settingsButton.setHeight(settingsButton.getWidth()/3);
+        settingsButton.getLabel().setFontScale(3);
+        settingsButton.setPosition(Gdx.graphics.getWidth()/2-settingsButton.getWidth()/2, Gdx.graphics.getHeight()/2 + settingsButton.getHeight()*2);
+        settingsButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new SettingsScreen(game, firebaseConnector));
@@ -58,14 +58,14 @@ public class HomeScreen implements Screen {
                 return true;
             }
         });
-        stage.addActor(scoresButton);
+        stage.addActor(settingsButton);
 
-        TextButton settingsButton = new TextButton("Profile", rainbowFontSkin, "small");
-        settingsButton.setWidth(Gdx.graphics.getWidth()/3);
-        settingsButton.setHeight(settingsButton.getWidth()/3);
-        settingsButton.getLabel().setFontScale(3);
-        settingsButton.setPosition(Gdx.graphics.getWidth()/2-scoresButton.getWidth()/2, Gdx.graphics.getHeight()/2);
-        settingsButton.addListener(new InputListener(){
+        TextButton profileButton = new TextButton("Profile", rainbowFontSkin, "small");
+        profileButton.setWidth(Gdx.graphics.getWidth()/3);
+        profileButton.setHeight(profileButton.getWidth()/3);
+        profileButton.getLabel().setFontScale(3);
+        profileButton.setPosition(Gdx.graphics.getWidth()/2-profileButton.getWidth()/2, Gdx.graphics.getHeight()/2);
+        profileButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new ProfileScreen(game, firebaseConnector));
@@ -77,7 +77,7 @@ public class HomeScreen implements Screen {
 
             }
         });
-        stage.addActor(settingsButton);
+        stage.addActor(profileButton);
 
         final Label welcomeBack = new Label("Welcome " + localDataHandler.getUserData().getUserName() + "!", rainbowFontSkin);
         final Label welcomeNew = new Label("Please enter your name!", rainbowFontSkin);
@@ -98,26 +98,26 @@ public class HomeScreen implements Screen {
 
         welcomeNew.setAlignment(Align.center);
         welcomeNew.getStyle().font.getData().setScale(5f);
-        welcomeNew.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
-        welcomeNew.setPosition((Gdx.graphics.getWidth()-welcomeNew.getWidth())/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3 / 2);
+        welcomeNew.setSize(Gdx.graphics.getWidth()/3*2, profileButton.getHeight());
+        welcomeNew.setPosition((Gdx.graphics.getWidth()-welcomeNew.getWidth())/2, Gdx.graphics.getHeight()/2 - profileButton.getHeight() * 3 / 2);
         stage.addActor(welcomeNew);
 
         welcomeBack.setAlignment(Align.center);
         welcomeBack.getStyle().font.getData().setScale(5f);
-        welcomeBack.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
-        welcomeBack.setPosition((Gdx.graphics.getWidth()-welcomeBack.getWidth())/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3 / 2);
+        welcomeBack.setSize(Gdx.graphics.getWidth()/3*2, profileButton.getHeight());
+        welcomeBack.setPosition((Gdx.graphics.getWidth()-welcomeBack.getWidth())/2, Gdx.graphics.getHeight()/2 - profileButton.getHeight() * 3 / 2);
         stage.addActor(welcomeBack);
 
         usernameTextField.setAlignment(Align.center);
         usernameTextField.getStyle().font.getData().setScale(3.5f);
-        usernameTextField.setSize(Gdx.graphics.getWidth()/3*2, scoresButton.getHeight());
-        usernameTextField.setPosition(Gdx.graphics.getWidth()/2-usernameTextField.getWidth()/2, Gdx.graphics.getHeight()/2 - scoresButton.getHeight() * 3);
+        usernameTextField.setSize(Gdx.graphics.getWidth()/3*2, profileButton.getHeight());
+        usernameTextField.setPosition(Gdx.graphics.getWidth()/2-usernameTextField.getWidth()/2, Gdx.graphics.getHeight()/2 - profileButton.getHeight() * 3);
         stage.addActor(usernameTextField);
 
         saveNameButton.setWidth(Gdx.graphics.getWidth()/2);
         saveNameButton.setHeight(saveNameButton.getWidth()/2);
         saveNameButton.getLabel().setFontScale(3);
-        saveNameButton.setPosition(Gdx.graphics.getWidth()/2-saveNameButton.getWidth()/2,scoresButton.getHeight());
+        saveNameButton.setPosition(Gdx.graphics.getWidth()/2-saveNameButton.getWidth()/2,profileButton.getHeight());
         saveNameButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -146,7 +146,7 @@ public class HomeScreen implements Screen {
         playButton.setWidth(Gdx.graphics.getWidth()/2);
         playButton.setHeight(playButton.getWidth()/2);
         playButton.getLabel().setFontScale(3);
-        playButton.setPosition(Gdx.graphics.getWidth()/2-playButton.getWidth()/2,scoresButton.getHeight());
+        playButton.setPosition(Gdx.graphics.getWidth()/2-playButton.getWidth()/2,profileButton.getHeight());
         playButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
