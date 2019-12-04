@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -21,9 +23,11 @@ public class SettingsScreen implements Screen {
     private SpriteBatch batch;
     private Game game;
     private Skin skin;
+    private FirebaseConnector firebaseConnector;
 
-    public SettingsScreen(Game aGame) {
+    public SettingsScreen(Game aGame, FirebaseConnector connector) {
         game = aGame;
+        firebaseConnector = connector;
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
 
@@ -56,6 +60,18 @@ public class SettingsScreen implements Screen {
 
         TextButton buttonA = new TextButton("LEFT", skin);
         TextButton buttonB = new TextButton("RIGHT", skin);
+        buttonA.addListener(new InputListener() {
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+          }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
 
         table.row().colspan(3).expandX().fillX();
         table.add(topLabel).fillX();

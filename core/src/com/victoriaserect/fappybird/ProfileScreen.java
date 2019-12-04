@@ -3,6 +3,7 @@ package com.victoriaserect.fappybird;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -22,19 +23,56 @@ public class ProfileScreen implements Screen {
 
     private Stage stage;
     private Game game;
-    Skin gameSkin, rainbowFontSkin, orange, quantum;
+    private LocalDataHandler localDataHandler;
+    private FirebaseConnector firebaseConnector;
 
-    LocalDataHandler localDataHandler;
-    String userDataString = "No user was saved yet";
+    Skin gameSkin, rainbowFontSkin, orange;
+    Toast toast;
 
-    public ProfileScreen(Game aGame) {
+    public ProfileScreen(Game aGame, FirebaseConnector connector) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
+
+        localDataHandler = new LocalDataHandler();
+        UserData user = localDataHandler.getUserData();
+        firebaseConnector = connector;
+
         gameSkin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
         rainbowFontSkin = new Skin(Gdx.files.internal("rainbow/skin/rainbow-ui.json"));
         orange = new Skin(Gdx.files.internal("orange/skin/uiskin.json"));
-        localDataHandler = new LocalDataHandler();
-        UserData user = localDataHandler.getUserData();
+
+        Toast.ToastFactory toastFactory = new Toast.ToastFactory.Builder()
+                .font(rainbowFontSkin.getFont("font"))
+                .backgroundColor(new Color(0.5f, 0.5f, 0.5f, 1f))
+                .fadingDuration(1.2f)
+                .fontColor(new Color(1f, 1f, 1f, 0.75f))
+                .margin(20)
+                .maxTextRelativeWidth(1f)
+                .positionY(100)
+                .build();
+
+        //local data will send to firebase only if user entered this screen
+        if (user.getFirebaseId().equals(localDataHandler.DEFAULT_FIREBASE_ID)
+                && user.getUserName().equals(localDataHandler.DEFAULT_USERNAME)) {
+            //if the default username was not changed, we don't save data into firebase
+            //(profile view before name input)
+            toast = toastFactory.create("Go back and save your username", Toast.Length.LONG);
+
+        } else if (user.getFirebaseId().equals(localDataHandler.DEFAULT_FIREBASE_ID)
+                && !user.getUserName().equals(localDataHandler.DEFAULT_USERNAME)) {
+            //name changed, saving the new user into firebase
+            user.setFirebaseId(firebaseConnector.createUserId(user));
+            firebaseConnector.saveNewUser(user);
+            //updating local userdata with the firebase id for the future update process
+            localDataHandler.writeUser(user);
+            toast = toastFactory.create("New user sent to firebase", Toast.Length.LONG);
+
+        } else if (!user.getFirebaseId().equals(localDataHandler.DEFAULT_FIREBASE_ID)) {
+            //updating the data of the existing user using its firebise id
+            firebaseConnector.updateUser(user);
+            toast = toastFactory.create("All data updated in firebase", Toast.Length.LONG);
+        }
+
         Label title = new Label("Profile", rainbowFontSkin);
         title.setAlignment(Align.center);
         title.setY((float)((Gdx.graphics.getHeight() - title.getHeight()) * 0.8));
@@ -45,20 +83,20 @@ public class ProfileScreen implements Screen {
         Table stageTable = new Table();
         stageTable.setFillParent(false);
         stageTable.setWidth(Gdx.graphics.getWidth());
-        Label username = new Label("Username ", rainbowFontSkin);
-        username.setFontScale(1.2f);
-        Label premium = new Label("Premium user ", rainbowFontSkin);
-        premium.setFontScale(1.2f);
-        Label firstGame = new Label("First game played ", rainbowFontSkin);
-        firstGame.setFontScale(1.2f);
-        Label totalGame = new Label("Total game played ", rainbowFontSkin);
-        totalGame.setFontScale(1.2f);
-        Label totalTime = new Label("Total time played ", rainbowFontSkin);
-        totalTime.setFontScale(1.2f);
+        Label username = new Label("Username ", gameSkin);
+        username.setFontScale(2.0f);
+        Label premium = new Label("Premium user ", gameSkin);
+        premium.setFontScale(2.0f);
+        Label firstGame = new Label("First game played ", gameSkin);
+        firstGame.setFontScale(2.0f);
+        Label totalGame = new Label("Total game played ", gameSkin);
+        totalGame.setFontScale(2.0f);
+        Label totalTime = new Label("Total time played ", gameSkin);
+        totalTime.setFontScale(2.0f);
         Label highScore = new Label("Highest score ", rainbowFontSkin);
-        highScore.setFontScale(1.2f);
+        highScore.setFontScale(2.0f);
 
-        Table left = new Table(rainbowFontSkin);
+        Table left = new Table(gameSkin);
         left.setWidth(Gdx.graphics.getWidth()/2);
         left.add(username).right();
         left.row();
@@ -72,20 +110,20 @@ public class ProfileScreen implements Screen {
         left.row();
         left.add(highScore).right();
 
-        Label usernameValue = new Label(user.getUserName(), rainbowFontSkin);
-        usernameValue.setFontScale(1.2f);
-        Label premiumValue = new Label(String.valueOf(user.isPremium()), rainbowFontSkin);
-        premiumValue.setFontScale(1.2f);
-        Label firstGameValue = new Label(String.valueOf(user.getFirstGameHumanized()), rainbowFontSkin);
-        firstGameValue.setFontScale(1.2f);
-        Label totalGameValue = new Label(String.valueOf(user.getTotalPlayedGames()), rainbowFontSkin);
-        totalGameValue.setFontScale(1.2f);
-        Label totalTimeValue = new Label(String.valueOf(millisToDuration(user.getTotalPlayedTime())), rainbowFontSkin);
-        totalTimeValue.setFontScale(1.2f);
+        Label usernameValue = new Label(user.getUserName(), gameSkin);
+        usernameValue.setFontScale(2.0f);
+        Label premiumValue = new Label(String.valueOf(user.isPremium()), gameSkin);
+        premiumValue.setFontScale(2.0f);
+        Label firstGameValue = new Label(String.valueOf(user.getFirstGameHumanized()), gameSkin);
+        firstGameValue.setFontScale(2.0f);
+        Label totalGameValue = new Label(String.valueOf(user.getTotalPlayedGames()), gameSkin);
+        totalGameValue.setFontScale(2.0f);
+        Label totalTimeValue = new Label(String.valueOf(millisToDuration(user.getTotalPlayedTime())), gameSkin);
+        totalTimeValue.setFontScale(2.0f);
         Label highScoreValue = new Label(String.valueOf(user.getHighestScore()), rainbowFontSkin);
-        highScoreValue.setFontScale(1.2f);
+        highScoreValue.setFontScale(2.0f);
 
-        Table right = new Table(rainbowFontSkin);
+        Table right = new Table(gameSkin);
         right.setWidth(Gdx.graphics.getWidth()/2);
         right.add(usernameValue).left();
         right.row();
@@ -99,7 +137,7 @@ public class ProfileScreen implements Screen {
         right.row();
         right.add(highScoreValue).left();
 
-        SplitPane split = new SplitPane(left, right, false, rainbowFontSkin);
+        SplitPane split = new SplitPane(left, right, false, gameSkin);
         stageTable.add(split).fill().expand();
         stageTable.setPosition(Gdx.graphics.getWidth() - left.getWidth(), Gdx.graphics.getHeight()/2, Align.center);
         stage.addActor(stageTable);
@@ -112,7 +150,7 @@ public class ProfileScreen implements Screen {
         backButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new HomeScreen(game));
+                game.setScreen(new HomeScreen(game, firebaseConnector));
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -132,7 +170,7 @@ public class ProfileScreen implements Screen {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
         millis -= TimeUnit.MINUTES.toMillis(minutes);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-        millis -= TimeUnit.MILLISECONDS.toSeconds(millis);
+        millis -= TimeUnit.SECONDS.toMillis(seconds);
 
         StringBuilder sb = new StringBuilder(64);
         //sb.append(days);
@@ -144,8 +182,8 @@ public class ProfileScreen implements Screen {
         sb.append(minutes);
         sb.append(" Minutes ");
         sb.append(seconds);
-        //sb.append('.');
-        //sb.append(millis);
+        sb.append('.');
+        sb.append(millis);
         sb.append(" Seconds");
         return(sb.toString());
     }
@@ -160,9 +198,10 @@ public class ProfileScreen implements Screen {
 
         Gdx.gl.glClearColor(13.0f/255.0f, 59.0f/255.0f, 95.0f/255.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        toast.render(delta);
         stage.act();
         stage.draw();
+
     }
 
     @Override

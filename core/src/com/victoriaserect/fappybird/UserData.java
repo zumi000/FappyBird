@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class UserData {
     private String userName;
+    private String firebaseId;
     private boolean isPremium;
     private long firstGame;
     private String firstGameHumanized;
@@ -17,8 +18,9 @@ public class UserData {
     private long highestScore;
     private int apiVersion;
 
-    public UserData(String userName, int apiVersion) {
+    public UserData(String userName, String firebaseId, int apiVersion) {
         this.userName = userName;
+        this.firebaseId = firebaseId;
         this.isPremium = false;
         this.firstGame = this.lastUpdated = System.currentTimeMillis();
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MMM dd. HH:mm");
@@ -29,6 +31,7 @@ public class UserData {
 
     public UserData(JsonValue fromJson) {
         this.userName = fromJson.getString("userName");
+        this.firebaseId = fromJson.getString("firebaseId");
         this.isPremium = fromJson.getBoolean("isPremium");
         this.firstGame = fromJson.getLong("firstGame");
         this.firstGameHumanized = fromJson.getString("firstGameHumanized");
@@ -44,6 +47,7 @@ public class UserData {
     public String toString() {
         return "UserData{" + '\n' +
                 "userName='" + userName + '\'' + '\n' +
+                ", firebaseId=" + firebaseId + '\n' +
                 ", isPremium=" + isPremium + '\n' +
                 ", firstGame=" + firstGame + '\n' +
                 ", firstGameHumanized='" + firstGameHumanized + '\'' + '\n' +
@@ -69,6 +73,14 @@ public class UserData {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getFirebaseId() {
+        return firebaseId;
+    }
+
+    public void setFirebaseId(String firebaseId) {
+        this.firebaseId = firebaseId;
     }
 
     public boolean isPremium() {

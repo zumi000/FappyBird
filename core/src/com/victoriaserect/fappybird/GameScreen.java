@@ -29,6 +29,7 @@ public class GameScreen implements Screen {
 
 	private Stage stage;
 	private Game game;
+	private FirebaseConnector firebaseConnector;
 	Skin gameSkin, rainbowFontSkin;
 	LocalDataHandler localDataHandler;
 	UserData user;
@@ -52,7 +53,7 @@ public class GameScreen implements Screen {
     //gameplay settings
     //TODO: combine this with the score (leveling up the difficulty during the game) || or let the player set up before start (?)
     float gravity = 1f;
-    float tubeSpeed = 5;
+    float tubeSpeed = 8;
     int birdVariant = 0;
     float gap = 400;
     float birdX;
@@ -62,8 +63,9 @@ public class GameScreen implements Screen {
     float birdY, velocity, maxTubeOffset, tubeOffset, tubeX;
     boolean actualTubeSucceed, actualGameSaved;
 
-    public GameScreen(final Game aGame) {
-        game = aGame;
+    public GameScreen(final Game aGame, final FirebaseConnector connector) {
+    	game = aGame;
+    	firebaseConnector = connector;
         stage = new Stage(new ScreenViewport());
 		gameSkin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
 		rainbowFontSkin = new Skin(Gdx.files.internal("rainbow/skin/rainbow-ui.json"));
@@ -188,7 +190,7 @@ public class GameScreen implements Screen {
 				playAgainButton.addListener(new InputListener(){
 					@Override
 					public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-						game.setScreen(new GameScreen(game));
+						game.setScreen(new GameScreen(game, firebaseConnector));
 					}
 					@Override
 					public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -206,7 +208,7 @@ public class GameScreen implements Screen {
 				home.addListener(new InputListener(){
 					@Override
 					public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-						game.setScreen(new HomeScreen(game));
+						game.setScreen(new HomeScreen(game, firebaseConnector));
 					}
 					@Override
 					public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

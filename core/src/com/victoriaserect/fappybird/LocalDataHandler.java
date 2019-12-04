@@ -5,30 +5,33 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
 
 public class LocalDataHandler {
+
     Json json = new Json();
     FileHandle scoresFile, userDataFile;
-    final String DEFAULT_USERNAME = "new_anonymus_user";
+    final String DEFAULT_USERNAME = "Unregistered";
+    final String DEFAULT_FIREBASE_ID = "Unregistered";
 
     public LocalDataHandler() {
         if (Gdx.files.local("data/userdata.txt").exists()) {
             userDataFile = Gdx.files.local("data/userdata.txt");
         } else {
             userDataFile = Gdx.files.local("data/userdata.txt");
-            writeUser(new UserData(DEFAULT_USERNAME, Gdx.app.getVersion()));
+            writeUser(new UserData(DEFAULT_USERNAME, DEFAULT_FIREBASE_ID, Gdx.app.getVersion()));
         }
         //            scoresFile = Gdx.files.local("data/scores.txt");
     }
 
-    public LocalDataHandler(String s) {
-        userDataFile = Gdx.files.local("data/userdata.txt");
-        writeUser(new UserData(DEFAULT_USERNAME, Gdx.app.getVersion()));
-    }
+//    public LocalDataHandler(String s) {
+//        userDataFile = Gdx.files.local("data/userdata.txt");
+//        writeUser(new UserData(DEFAULT_USERNAME, Gdx.app.getVersion()));
+//    }
 
     public String randomize() {
         Random rand = new Random();
@@ -56,6 +59,10 @@ public class LocalDataHandler {
         user.setLastUpdatedHumanized(sdf.format(new Date(now)));
 
         writeUser(user);
+
     }
+
+
+
 
 }

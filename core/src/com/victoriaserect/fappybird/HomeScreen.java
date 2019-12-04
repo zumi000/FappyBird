@@ -19,18 +19,19 @@ public class HomeScreen implements Screen {
 
     private Stage stage;
     private Game game;
+    private FirebaseConnector firebaseConnector;
     Skin gameSkin, rainbowFontSkin;
     SpriteBatch batch;
     LocalDataHandler localDataHandler;
 
-    public HomeScreen(Game aGame) {
+    public HomeScreen(Game aGame, FirebaseConnector connector) {
         game = aGame;
+        firebaseConnector = connector;
         stage = new Stage(new ScreenViewport());
         gameSkin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
         rainbowFontSkin = new Skin(Gdx.files.internal("rainbow/skin/rainbow-ui.json"));
 
         batch = new SpriteBatch();
-        //localDataHandler = new LocalDataHandler("NEW_USER_AT_EVERY_START_OF_THE_HOME_SCREEN"); //TODO: name input debugger
         localDataHandler = new LocalDataHandler();
 
         Label title = new Label("Main menu", rainbowFontSkin);
@@ -49,7 +50,7 @@ public class HomeScreen implements Screen {
         scoresButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new SettingsScreen(game));
+                game.setScreen(new SettingsScreen(game, firebaseConnector));
             }
 
             @Override
@@ -67,7 +68,7 @@ public class HomeScreen implements Screen {
         settingsButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new ProfileScreen(game));
+                game.setScreen(new ProfileScreen(game, firebaseConnector));
 
             }
             @Override
@@ -120,13 +121,13 @@ public class HomeScreen implements Screen {
         saveNameButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("|" + usernameTextField.getText().trim() + "|");
                 if (usernameTextField.getText().equals("") ||
                         usernameTextField.getText().trim().equals(" ") ||
                         usernameTextField.getText().trim().isEmpty()
                  ) {
+                    //let the user try to find out what the pupore of this field is...
                 } else {
-                    localDataHandler.writeUser(new UserData(usernameTextField.getText().trim(), Gdx.app.getVersion()));
+                    localDataHandler.writeUser(new UserData(usernameTextField.getText().trim(), localDataHandler.DEFAULT_FIREBASE_ID, Gdx.app.getVersion()));
                     welcomeNew.setVisible(false);
                     usernameTextField.setVisible(false);
                     saveNameButton.setVisible(false);
@@ -149,7 +150,7 @@ public class HomeScreen implements Screen {
         playButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, firebaseConnector));
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

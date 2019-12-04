@@ -4,10 +4,15 @@ import com.badlogic.gdx.Game;
 
 public class FappyBirdGame extends Game {
 
+    public FirebaseConnector firebaseConnector;
+
+    public FappyBirdGame(FirebaseConnector firebaseConnector) {
+        this.firebaseConnector = firebaseConnector;
+    }
+
     @Override
     public void create () {
-        new LocalDataHandler().getUserData();
-        this.setScreen(new HomeScreen(this));
+        this.setScreen(new HomeScreen(this, firebaseConnector));
     }
 
     @Override
